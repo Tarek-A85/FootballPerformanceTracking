@@ -14,10 +14,10 @@
     <label class="block font-medium text-gray-700 mb-1">{{ __('My Team') }} <span class="text-red-500">*</span></label>
         @if($data['teams']->count())
 
-        <select name="my_team" class="w-full">
+        <select name="my_team" class="w-full rounded-md">
            @foreach($data['teams'] as $team)
 
-           <option value="{{ $team->id }}" {{ (int)request()->query('team') === $team->id ? 'selected' : '' }}>
+           <option value="{{ $team->id }}" {{ ( (int)request()->query('team') === $team->id ) || (!is_null(old('my_team'))) ? 'selected' : '' }}>
             {{ $team['name_' . app()->getLocale()] }}
         </option>
 
@@ -36,75 +36,70 @@
     </div>
 
     <div>
-    <label class="block font-medium text-gray-700 mb-1">{{ __('Opponent Team') }} <span class="text-red-500">*</span></label>
+    <label class="block font-medium text-gray-700 mb-1">{{ __('Opponent Team') }} <span class="text-red-500">*</span> <a href="{{ route('opponents.create') }}" class="mx-1 text-blue-400 underline">{{ __('Create') }}</a> </label>
         @if($data['opponents']->count())
-        <select name="opponent_team">
+        <select name="opponent_team" class="w-full rounded-md">
             @foreach($data['opponents'] as $opponent)
-            <option value="{{ $opponent->id }}">{{ $opponent['name_' . app()->getLocale()] }}</option>
+            <option value="{{ $opponent->id }}" {{ old('opponent_team') == $opponent->id ? 'selected' : '' }}>{{ $opponent['name_' . app()->getLocale()] }}</option>
             @endforeach
         </select>
-        <x-input-error :messages="$errors->first('opponent_team')" class="mt-2" />
 
         @else
-        <div class="flex items-center gap-4">
-        <p class="text-lg text-red-500">{{ __('You don\'t have any opponent team') }}</p>
-        <a href="{{ route('opponents.create') }}" class="text-blue-500 underline">
-            {{ __('Create a new opponent team') }}
-        </a>
-        </div>
+        <p class="text-lg text-red-500">{{ __('You don\'t have any opponent teams') }}</p>
         @endif
+
+        <x-input-error :messages="$errors->first('opponent_team')" class="mt-2" />
 
     </div>
 
     <div>
-    <label class="block font-medium text-gray-700 mb-1">{{ __('Tournament') }} <span class="text-red-500">*</span></label>
+    <label class="block font-medium text-gray-700 mb-1">{{ __('Tournament') }} <span class="text-red-500">*</span> <a href="{{ route('tournaments.create') }}" class="mx-1 text-blue-400 underline">{{ __('Create') }}</a></label>
         @if($data['tournaments']->count())
-        <select name="tournament">
+        <select name="tournament" class="w-full rounded-md">
             @foreach($data['tournaments'] as $tournament)
-            <option value="{{ $tournament->id }}" {{ old('tournament') === $tournament ? 'selected' : '' }}>{{ $tournament['name_' . app()->getLocale()] }}</option>
+            <option value="{{ $tournament->id }}" {{ old('tournament') == $tournament->id ? 'selected' : '' }}>{{ $tournament['name_' . app()->getLocale()] }}</option>
             @endforeach
         </select>
+        @else
+        <p class="text-lg text-red-500">{{ __('You don\'t have any tournaments') }}</p> 
+        @endif
+
         <x-input-error :messages="$errors->first('tournament')" class="mt-2" />
 
-        @else
-        <div class="flex items-center gap-4">
-           
-        <p class="text-lg text-red-500">{{ __('You don\'t have any tournament') }}</p> 
        
-        <a href="{{ route('tournaments.create') }}" class="text-blue-500 underline">
-            {{ __('Create a new tournament') }}
-        </a> 
-        </div>
-        @endif
     </div>
 
     <div>
     <label class="block font-medium text-gray-700 mb-1">{{ __('Round') }} <span class="text-red-500">*</span></label>
         @if($data['rounds']->count())
-        <select name="round" class="rounded-lg">
+        <select name="round" class="rounded-md w-full">
             @foreach($data['rounds'] as $round)
-            <option value="{{ $round->id }}" {{ old('round') === $round ? 'selected' : '' }}>{{ $round['name_' . app()->getLocale()] }}</option>
+            <option value="{{ $round->id }}" {{ old('round') == $round->id ? 'selected' : '' }}>{{ $round['name_' . app()->getLocale()] }}</option>
             @endforeach
         </select>
-        <x-input-error :messages="$errors->first('round')" class="mt-2" />
 
         @else
         <p class="text-lg text-red-500">{{ __('There is no available rounds') }}</p>
         @endif
+        
+        <x-input-error :messages="$errors->first('round')" class="mt-2" />
+
+       
     </div>
 
     <div>
     <label class="block font-medium text-gray-700 mb-1">{{ __('Date') }} <span class="text-red-500">*</span></label>
-        <input type="date" value="{{ old('date') }}" name="date" class="rounded-md" id="customDatePicker" placeholder="{{ __('Day/Month/Year') }}">
+        <input type="date" name="date" class="rounded-md w-full" id="customDatePicker" placeholder="{{ __('Day/Month/Year')  }}">
         <x-input-error :messages="$errors->first('date')" class="mt-2" />
     </div>
 
     <div>
     <label class="block font-medium text-gray-700 mb-1">{{ __('Time') }} <span class="text-red-500">*</span></label>
-    <input type="time" value="{{ old('time') }}" name="time" class="rounded-md">
+    <input type="time" value="{{ old('time') }}" name="time" class="rounded-md w-full">
     <x-input-error :messages="$errors->first('time')" class="mt-2" />
     </div>
     </div>
+    <input type="hidden" name="form_page" value="schedule_page">
     <div class="flex justify-center items-center mt-4 p-4">
         <x-primary-button class=" bg-green-500 hover:bg-green-400 focus:bg-green-400 active:bg-green-400">
             {{ __('Submit') }}

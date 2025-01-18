@@ -61,7 +61,7 @@
    <div class="mt-8">
    <label class="block font-medium text-gray-700 mb-1">{{ __('Report') }} </label>
     <textarea name="report" class="w-full">{{$stat->report}}</textarea>
-    <x-input-error :messages="$errors->first('rating')" class="mt-2" />
+    <x-input-error :messages="$errors->first('report')" class="mt-2" />
    </div>
 
    <div class="flex justify-center items-center mt-4 p-4">

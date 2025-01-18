@@ -9,6 +9,8 @@ use App\Traits\ActivityRateLimitingTrait;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Actions\CheckActivityContradictingAction;
+use Carbon\Carbon;
+
 class StoreMatchRequest extends FormRequest
 {
     use ActivityRateLimitingTrait;
@@ -43,6 +45,7 @@ class StoreMatchRequest extends FormRequest
             'round' => ['required', Rule::exists('rounds', 'id')],
             'date' => ['required', 'date'],
             'time' => ['required', 'date_format:H:i'],
+            'form_page' => ['required', 'in:schedule_page,team_page,tournament_page']
        ];  
     }
 
@@ -69,7 +72,7 @@ class StoreMatchRequest extends FormRequest
     public function ensure_is_not_busy()
     {
 
-        $busy = $this->check_contradicting_action->execute($this->date, $this->time);
+        $busy = $this->check_contradicting_action->execute(Carbon::parse($this->date)->format('Y-m-d'), $this->time);
         
         if($busy){
             throw ValidationException::withMessages([
@@ -77,4 +80,5 @@ class StoreMatchRequest extends FormRequest
             ]);
         }
     }
+    
 }

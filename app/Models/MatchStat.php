@@ -12,6 +12,11 @@ class MatchStat extends Model
 
     protected $guarded = ['id'];
 
+   protected $hidden = [
+    'created_at',
+    'updated_at'
+   ];
+
     public function match()
     {
         return $this->belongsTo(OfficialMatch::class, 'official_match_id');

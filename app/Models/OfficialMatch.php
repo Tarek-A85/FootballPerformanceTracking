@@ -22,6 +22,13 @@ class OfficialMatch extends Model
         );
     }
 
+    public function time(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->format('H:i'),
+        );
+    }
+
     public function stats()
     {
         return $this->hasOne(MatchStat::class, 'official_match_id');

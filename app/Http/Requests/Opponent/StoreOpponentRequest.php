@@ -29,6 +29,7 @@ class StoreOpponentRequest extends FormRequest
         return [
             'english_name' => ['required', 'string', 'max:150'],
             'arabic_name' => ['required', 'string', 'max:150'],
+            'team' => ['nullable', 'exists:teams,id']
         ];
     }
 

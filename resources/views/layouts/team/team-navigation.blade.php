@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="@if(auth()->user()->is_admin)bg-blue-600 @else  @endif dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class=" dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  ">
         <div class="flex justify-between h-16">
@@ -16,10 +16,10 @@
                         {{ __('Schedule') }} <i class="fa-regular fa-calendar-days mx-1"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('team.match_stats', ['team' => $team])" :active="request()->routeIs('team.match_stats')" class="font-semibold">
-                        {{ __('Match Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
+                        {{ __('Matches Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('team.training_stats', ['team' => $team])" :active="request()->routeIs('team.training_stats')" class="font-semibold">
-                        {{ __('Training Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
+                        {{ __('Trainings Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
                     </x-nav-link>
                     <x-nav-link :href="route('teams.edit', ['team' => $team] )" :active="request()->routeIs('teams.edit')" class="font-semibold">
                         {{ __('Team Details') }} <i class="fa-solid fa-shirt mx-1"></i>

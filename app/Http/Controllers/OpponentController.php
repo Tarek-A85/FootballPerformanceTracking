@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Opponent\StoreOpponentRequest;
 use App\Models\Opponent;
+use App\Models\Team;
 use App\Services\OpponentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Gate;
 
 class OpponentController extends Controller
 {
@@ -29,9 +30,9 @@ class OpponentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Team $team = null)
     {
-        return view('opponent.create');
+        return view('opponent.create', compact('team'));
     }
 
     /**
@@ -43,7 +44,13 @@ class OpponentController extends Controller
 
         $this->opponent_service->store($request->validated());
 
-        return redirect()->route('opponents.index')->with('success', __('The opponent is created successfully'));
+        if(is_null($request->validated('team'))){
+            return redirect()->route('matches.create')
+                             ->with('success',  __('The :attribute is created successfully', ['attribute' => __('opponent')]) );
+        }
+       
+        return redirect()->route('team.create_match', ['team' => $request->validated('team')])
+                         ->with('success', __('The :attribute is created successfully', ['attribute' => __('opponent')]));
     }
 
     /**
@@ -51,7 +58,9 @@ class OpponentController extends Controller
      */
     public function show(Opponent $opponent)
     {
-        //
+        if(!Gate::allows('manage-opponent', $opponent)){
+            abort(404);
+        }
     }
 
     /**
@@ -59,7 +68,9 @@ class OpponentController extends Controller
      */
     public function edit(Opponent $opponent)
     {
-        //
+        if(!Gate::allows('manage-opponent', $opponent)){
+            abort(404);
+        }
     }
 
     /**
@@ -67,7 +78,9 @@ class OpponentController extends Controller
      */
     public function update(Request $request, Opponent $opponent)
     {
-        //
+        if(!Gate::allows('manage-opponent', $opponent)){
+            abort(404);
+        }
     }
 
     /**
@@ -75,6 +88,8 @@ class OpponentController extends Controller
      */
     public function destroy(Opponent $opponent)
     {
-        //
+        if(!Gate::allows('manage-opponent', $opponent)){
+            abort(404);
+        }
     }
 }

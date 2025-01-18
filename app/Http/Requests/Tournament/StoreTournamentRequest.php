@@ -33,7 +33,7 @@ class StoreTournamentRequest extends FormRequest
     }
 
      /**
-     * Check for possible duplication in users opponents names
+     * Check for possible duplication in users tournaments names
      */
     public function ensure_uniqueness()
     {
@@ -46,12 +46,12 @@ class StoreTournamentRequest extends FormRequest
 
        if(!$user->tournaments->where('name_en', $this->english_name)->isEmpty()){
            throw ValidationException::withMessages([
-               'english_name' => __('This opponent\'s english name already exists')
+               'english_name' => __('This tournament\'s english name already exists')
            ]);
        }
         if(!$user->tournaments->where('name_ar', $this->arabic_name)->isEmpty()){
            throw ValidationException::withMessages([
-               'arabic_name' => __('This opponent\'s arabic name already exists')
+               'arabic_name' => __('This tournament\'s arabic name already exists')
            ]);
        }
     }

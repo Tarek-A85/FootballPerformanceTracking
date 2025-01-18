@@ -1,6 +1,6 @@
 <x-app-layout>
     <div class="container mx-auto max-w-lg">
-    <h1 class="p-8 text-center text-2xl">{{ __('Create a new tournament') }}</h1>
+    <h1 class="p-8 text-center text-2xl">{{ __('Create New Tournament') }}</h1>
     <form action="{{ route('tournaments.store') }}" method="POST" class="p-8">
         @csrf
 

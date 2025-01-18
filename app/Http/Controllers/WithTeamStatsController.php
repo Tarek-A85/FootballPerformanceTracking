@@ -10,6 +10,7 @@ use App\Models\Opponent;
 use App\Models\Team;
 use App\Services\WithTeamStatsService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class WithTeamStatsController extends Controller
 {
@@ -22,6 +23,10 @@ class WithTeamStatsController extends Controller
 
     public function matches_stats(Team $team, ShowMatchStatsRequest $request)
     {
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
+
         $data = $this->team_stats_service->matches_stats($team, $request->validated());
 
         return view('team.match-stats', compact('data', 'team'));
@@ -29,6 +34,11 @@ class WithTeamStatsController extends Controller
 
     public function training_stats(Team $team, ShowTrainingStatsRequest $request)
     {
+
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
+        
         $data = $this->team_stats_service->training_stats($team, $request->validated());
 
         return view('team.training-stats', compact('data', 'team'));

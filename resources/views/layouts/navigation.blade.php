@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="@if(auth()->user()->is_admin)bg-blue-600 @else  @endif dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class=" dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  ">
         <div class="flex justify-between h-16">
@@ -21,11 +21,11 @@
                     <x-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')" class="font-semibold">
                         {{ __('Tournaments') }} <i class="fa-solid fa-trophy mx-1"></i>
                     </x-nav-link>
-                    <x-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')" class="font-semibold">
-                        {{ __('Match Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
+                    <x-nav-link :href="route('stats.matches')" :active="request()->routeIs('stats.matches')" class="font-semibold">
+                        {{ __('Matches Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
                     </x-nav-link>
-                    <x-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')" class="font-semibold">
-                        {{ __('Training Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
+                    <x-nav-link :href="route('stats.trainings')" :active="request()->routeIs('stats.trainings')" class="font-semibold">
+                        {{ __('Trainings Statistics') }} <i class="fa-solid fa-square-poll-vertical mx-1"></i>
                     </x-nav-link>
                     @if(auth()->user()->is_admin)
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -101,11 +101,15 @@
             <x-responsive-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')">
                 {{ __('Tournaments') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')">
-                {{ __('Match Statistics') }}
+            <x-responsive-nav-link :href="route('stats.matches')" :active="request()->routeIs('stats.matches')">
+                {{ __('Matches Statistics') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('tournaments.index')" :active="request()->routeIs('tournaments.index')">
-                {{ __('Training Statistics') }}
+            <x-responsive-nav-link :href="route('stats.trainings')" :active="request()->routeIs('stats.trainings')">
+                {{ __('Trainings Statistics') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('change_locale', app()->getLocale() === 'ar' ? 'en' : 'ar')" class="hover:text-sky-500">
+            <i class="fa-solid fa-globe"></i>
+            {{ app()->getLocale() === 'ar' ? 'العربية' : 'en' }}
             </x-responsive-nav-link>
             @if(auth()->user()->is_admin)
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">

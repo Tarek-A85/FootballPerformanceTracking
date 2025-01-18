@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Team;
 
 use App\Models\Team;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
+use App\Services\BaseService;
 
 class TeamService extends BaseService {
 
@@ -27,10 +28,10 @@ class TeamService extends BaseService {
 
     public function show(array $params, Team $team)
     {
-        $matches = $trainings = $data = collect([]);
+         $data = collect([]);
         
         if(!isset($params['type']) || $params['type'] !== 'trainings'){
-            $matches = $team->matches()->with('team:id,name_en,name_ar',
+            $matches = $team->matches()->with('team:id,name_en,name_ar,color',
                                               'opponent:id,name_en,name_ar',
                                               'status:id,name_en,name_ar',
                                               'tournament:id,name_en,name_ar',
@@ -44,6 +45,9 @@ class TeamService extends BaseService {
 
              $matches = $matches->whereBetween('date', [$params['from'], $params['to']]);
           
+            }
+            else{
+                $matches = $matches->where('date', now()->toDateString());
             }
             $data = $matches->get();
 
@@ -60,6 +64,9 @@ class TeamService extends BaseService {
                 $params['to'] = Carbon::parse($params['to'])->format('Y-m-d');
                 
                 $trainings = $trainings->whereBetween('date', [$params['from'], $params['to']]);
+            }
+            else{
+                $trainings->where('date', now()->toDateString());
             }
 
             $trainings = $trainings->get();
@@ -96,6 +103,8 @@ class TeamService extends BaseService {
     public function destroy(Team $team): void
     {
         $deleted_team = $team;
+
+        $team->training_sessions()->delete();
 
         $team->delete();
 

@@ -1,8 +1,10 @@
 <x-app-layout>
     <div class="container mx-auto max-w-lg">
-    <h1 class="p-8 text-center text-2xl">{{ __('Create a new opponent') }}</h1>
+    <h1 class="p-8 text-center text-2xl">{{ __('Create New Opponent') }}</h1>
     <form action="{{ route('opponents.store') }}" method="POST" class="p-8">
         @csrf
+
+        <input type="hidden" name="team" value="{{ !is_null($team) ? $team->id : null }}">
 
         <div>
         <label class="block font-medium text-gray-700 mb-1">{{ __('Opponent Name (English)') }} <span class="text-red-500">*</span></label>

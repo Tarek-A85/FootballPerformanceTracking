@@ -8,6 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use App\Actions\CheckActivityContradictingAction;
+use App\Models\ActivityStatus;
 use App\Traits\ActivityRateLimitingTrait;
 class UpdateMatchRequest extends FormRequest
 {
@@ -37,16 +38,19 @@ class UpdateMatchRequest extends FormRequest
      */
     public function rules(): array
     {
+
+        $check = ($this->status == ActivityStatus::where('name_en', 'finished')->first()->id);
+
         return [
             'my_team' => ['required', Rule::exists('teams', 'id')->where('user_id', auth()->id())],
             'opponent_team' => ['required', Rule::exists('opponents', 'id')->where('user_id', auth()->id())],
             'tournament' => ['required', Rule::exists('tournaments', 'id')->where('user_id', auth()->id())],
             'round' => ['required', Rule::exists('rounds', 'id')],
             'date' => ['nullable', 'date'],
-            'time' => ['required', 'date_format:H:i:s'],
+            'time' => ['required', 'date_format:H:i'],
             'status' => ['required', Rule::exists('activity_statuses', 'id')],
-            'team_score' => ['nullable', 'numeric', 'min:0'],
-            'opponent_score' => ['nullable', 'numeric', 'min:0'],
+            'team_score' => [ (!$check ? 'nullable' : 'required'), 'numeric', 'min:0'],
+            'opponent_score' => [(!$check ? 'nullable' : 'required'), 'numeric', 'min:0'],
        ];  
     }
 
@@ -65,6 +69,8 @@ class UpdateMatchRequest extends FormRequest
         }
 
         $this->ensure_is_not_busy();
+
+        $this->check_future_match_status();
     }
 
      /**
@@ -80,5 +86,28 @@ class UpdateMatchRequest extends FormRequest
                   'date' => __('You have another activity in this date and time')
               ]);
           }
+      }
+
+      /**
+       * Ensure Future match is not finished
+       */
+      public function check_future_match_status()
+      {
+        $date = (isset($this->date) ? $this->date : request()->match->date);
+
+        if($date > now()->toDateString() && ($this->status == ActivityStatus::where('name_en', 'finished')->first()->id)){
+            throw ValidationException::withMessages([
+                'status' => __('The game is in the future is can\'t be finished')
+            ]);
+        }
+      }
+
+      public function attributes()
+      {
+        return [
+            'team_score' => __('team score'),
+            'opponent_score' => __('opponent score')
+
+        ];
       }
 }

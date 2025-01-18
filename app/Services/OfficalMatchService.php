@@ -80,6 +80,11 @@ class OfficalMatchService extends BaseService {
             'opponent_team_score' => $finished ? $data['opponent_score'] : null,
         ]);
 
+        if(!$finished && isset($match->stats)){
+            $match->stats->delete();
+            
+        }
+
         $this->activity_logger->update('Match', [
             'user_id' => auth()->id(),
             'ip' => request()->ip(),

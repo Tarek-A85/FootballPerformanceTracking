@@ -30,7 +30,7 @@
             </div>
                 <div class="flex justify-between items-center ">
                     <h4 class="text-xl font-bold truncate ">{{ $team['name_'. app()->getLocale()] }}</h4>
-                    <p class="text-xl flex items-center">5 <i class="fa-solid fa-trophy mx-1"></i></p>
+                    <p class="text-xl flex items-center">{{ $team->finished_matches_count}} <i class="fa-solid fa-person-running mx-1"></i></p>
                 </div>
 
 

@@ -4,6 +4,8 @@ namespace App\Http\Requests\MatchStat;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\ActivityRateLimitingTrait;
+use Illuminate\Validation\ValidationException;
+
 class UpdateStatRequest extends FormRequest
 {
     use ActivityRateLimitingTrait;
@@ -37,8 +39,16 @@ class UpdateStatRequest extends FormRequest
         ];
     }
 
-    public function check_rate_limiting()
+    public function check_number_of_goals_and_assists()
     {
         $this->ensureIsNotRateLimited('stat-update', 20, 'shots');
+
+        $match = request()->stat->match;
+
+        if($this->goals + $this->assists > $match->home_team_score){
+            throw ValidationException::withMessages([
+                'goals' => __('The number of goals and assists must not exceed the number of team goals')
+            ]);
+        }
     }
 }

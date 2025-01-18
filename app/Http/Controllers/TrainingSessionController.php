@@ -8,6 +8,7 @@ use App\Models\TrainingSession;
 use App\Services\TrainingService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TrainingSessionController extends Controller
 {
@@ -44,14 +45,34 @@ class TrainingSessionController extends Controller
         $request->ensure_is_not_busy();
 
         $this->training_service->store($request->validated());
+
+        if($request->validated('form_page') === 'schedule_page'){
+          
+            return redirect()->route('schedule.index', [
+                'from' => $request->validated('date'),
+
+                'to' => $request->validated('date')
+
+            ])->with('success', __('The :attribute is created successfully', ['attribute' => __('training')]));
+        }
+        else{
+            return redirect()->route('teams.show', [
+                'team' => $request->validated('team'),
+
+                'from' => $request->validated('date'),
+
+                'to' => $request->validated('date')
+                
+            ])->with('success', __('The :attribute is created successfully', ['attribute' => __('training')]));
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show()
     {
-        $training = TrainingSession::findOrFail($id);
+        
     }
 
     /**
@@ -59,6 +80,10 @@ class TrainingSessionController extends Controller
      */
     public function edit(TrainingSession $training)
     {
+        if(!Gate::allows('manage-training', $training)){
+            abort(404);
+        }
+
         $data = $this->training_service->edit();
 
         $date = Carbon::parse($training['date'])->format('d-m-Y');
@@ -71,11 +96,15 @@ class TrainingSessionController extends Controller
      */
     public function update(UpdateTrainingRequest $request, TrainingSession $training)
     {
+        if(!Gate::allows('manage-training', $training)){
+            abort(404);
+        }
+
         $request->ensure_is_not_busy();
 
         $this->training_service->update($training, $request->validated());
 
-        return redirect()->back()->with('success', __('The training is updated successfully'));
+        return redirect()->back()->with('success', __('The :attribute is updated successfully', ['attribute' => __('training')]));
     }
 
     /**
@@ -83,8 +112,12 @@ class TrainingSessionController extends Controller
      */
     public function destroy(TrainingSession $training)
     {
+        if(!Gate::allows('manage-training', $training)){
+            abort(404);
+        }
+        
         $this->training_service->destroy($training);
 
-        return redirect()->back()->with('success', __('The training is deleted successfully'));
+        return redirect()->route('schedule.index')->with('success', __('The :attribute is deleted successfully', ['attribute' => __('training')]));
     }
 }

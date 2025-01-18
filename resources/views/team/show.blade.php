@@ -1,5 +1,5 @@
 <x-team-layout :team="$team">
-@vite(['resources/css/app.css'])
+
 
   <div class="container mx-auto px-1 ">
     <div class="flex justify-between items-center py-8">
@@ -12,7 +12,7 @@
         <div class="flex flex-col md:flex-row md:items-center gap-4">
 
         <div>
-            <a href="{{ route('matches.create', ['team' => $team]) }}">
+            <a href="{{ route('team.create_match', ['team' => $team]) }}">
         <x-primary-button class="bg-sky-500 hover:bg-sky-400 focus:bg-sky-400 active:bg-sky-400">
             + {{ __('New Match') }}
         </x-primary-button>
@@ -20,7 +20,7 @@
         </div>
 
         <div>
-        <a href="{{ route('trainings.create', ['team' => $team]) }}">
+        <a href="{{ route('team.create_training', ['team' => $team]) }}">
         <x-primary-button class="bg-sky-500 hover:bg-sky-400 focus:bg-sky-400 active:bg-sky-400">
             + {{ __('New Training') }}
         </x-primary-button>
@@ -85,26 +85,30 @@
 
     <div class="flex justify-center items-center">
     <!-- Schedule -->
-    <div class="rounded border-2 border-orange-500 mt-8 w-full md:w-3/4 ">
+    <div class="rounded border-2 bg-gray-400 mt-8 w-full md:w-3/4 ">
         @forelse($schedule as $key => $events)
         <div class="p-4">
             <p class="text-xl font-bold"> {{ Carbon\Carbon::parse($key)->translatedFormat('l')}} 
-                {{Carbon\Carbon::parse($key)->format('d-m-Y')}}
+                {{Carbon\Carbon::parse($key)->format('d-m-Y')}} {{$key === now()->toDateString() ?  __('(Today)')  : ''}}
             </p>
        @foreach($events as $event)
        @if($event->type === 'match')
-       <a href="{{ route('matches.show', ['match' => $event]) }}">
+       <a href="{{ route('matches.show', ['match' => $event, 'team' => true]) }}">
         <div class="grid grid-cols-3 rounded border-2 mt-3 p-5 bg-white w-full" >
             <!-- Team -->
-           <div class="flex items-center font-bold text-2xl w-10 md:w-36 lg:w-60 text-orange-500 truncate ">
-           <p> {{ $event->team['name_'.app()->getLocale()] }}</p>
+           <div class="flex items-center font-bold text-2xl w-10 md:w-36 lg:w-60 truncate ">
+           <p @class(['team-color', 'bg-white' => ($event->team['suitable-background'] === 'white'), 'bg-black' => ($event->team['suitable-background'] === 'black')])
+           style="
+            --text-color: {{ $event->team['color'] }};
+            --hover-color: var(--text-color) ;
+            --hover-bg-color: {{ $event->team['suitable-background'] }};"> {{ $event->team['name_'.app()->getLocale()] }}</p>
            </div>
 
            <div class="flex justify-center text-center">
             
-           <div>
+           <div class="truncate">
             @if($event->status['name_en'] === 'not started')
-           <p>{{ Carbon\Carbon::parse($event->time)->format('H:i') }}</p> 
+           <p>{{ $event->time }}</p> 
            @elseif($event->status['name_en'] === 'cancelled')
            <p class="bg-red-500 text-white">{{ __('Cancelled') }}</p> 
            @elseif($event->status['name_en'] === 'posponed')
@@ -132,7 +136,7 @@
         @else
         <a href="{{ route('trainings.edit', ['training' => $event->id]) }}">
         <div class="flex justify-between rounded border-2 mt-3 bg-white w-full p-5">
-            <p class="text-xl font-bold">{{$event->training_type['name_' . app()->getLocale()]}} - {{ __('Training') }} </p>
+            <p class="text-xl font-bold">{{$event->training_type['name_' . app()->getLocale()]}} - {{ __('Training') }} <small> ( {{ __('for :hours hours and :minutes minutes', ['hours' => (floor($event->minutes / 60)), 'minutes' => round(($event->minutes % 60))]) }} )</small> </p>
            <div class="flex flex-col">
             @if($event->status['name_en'] != 'not started')
             <p @class(['text-xl',  'font-bold' , 'text-white', 'bg-gray-500' => ($event->status['name_en'] === 'posponed'), 'bg-red-500' => ($event->status['name_en'] === 'cancelled'), 'bg-green-500' => ($event->status['name_en'] === 'finished') ]) > {{ $event->status['name_' . app()->getLocale()] }}</p>

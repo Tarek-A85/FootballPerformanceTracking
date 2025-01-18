@@ -9,6 +9,7 @@ use App\Models\OfficialMatch;
 use App\Models\Team;
 use App\Services\MatchStatService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class MatchStatController extends Controller
 {
@@ -25,6 +26,10 @@ class MatchStatController extends Controller
      */
     public function create(OfficialMatch $match)
     {
+        if(!Gate::allows('manage-match', $match)){
+            abort(404);
+        }
+
         return view('match-stat.create', compact('match'));
     }
 
@@ -33,11 +38,15 @@ class MatchStatController extends Controller
      */
     public function store(StoreStatRequest $request, OfficialMatch $match)
     {
-        $request->check_rate_limiting();
+        if(!Gate::allows('manage-match', $match)){
+            abort(404);
+        }
+
+        $request->check_number_of_goals_and_assists();
 
         $this->match_stat_service->store($request->validated(), $match);
 
-        return redirect()->route('matches.show', $match)->with('success', __('Match stats are added successfully'));
+        return redirect()->route('matches.show', $match)->with('success', __('The :attribute is created successfully', ['attribute' => __('Match Statistics')]));
     }
 
     /**
@@ -45,6 +54,10 @@ class MatchStatController extends Controller
      */
     public function edit(MatchStat $stat)
     {
+        if(!Gate::allows('manage-match', $stat->match->id)){
+            abort(404);
+        }
+
         return view('match-stat.edit', compact('stat'));
     }
 
@@ -53,11 +66,15 @@ class MatchStatController extends Controller
      */
     public function update(UpdateStatRequest $request, MatchStat $stat)
     {
-        $request->check_rate_limiting();
+        if(!Gate::allows('manage-match', $stat->match->id)){
+            abort(404);
+        }
+        
+        $request->check_number_of_goals_and_assists();
 
         $this->match_stat_service->update($request->validated(), $stat);
 
-        return redirect()->route('matches.show', $stat->match)->with('success', __('Match stats are updated successfully')); 
+        return redirect()->route('matches.show', $stat->match)->with('success', __('The :attribute is updated successfully', ['attribute' => __('Match Statistics')])); 
     }
 
 }

@@ -43,8 +43,8 @@
             @endguest
 
             @auth
-            <a href="">
-            <x-primary-button class="px-10 bg-sky-500 hover:bg-sky-400 focus:bg-sky-500 active:bg-sky-500">{{ __('Main Page') }}</x-primary-button>
+            <a href="{{ route('schedule.index') }}">
+            <x-primary-button class="px-10 bg-sky-500 hover:bg-sky-400 focus:bg-sky-500 active:bg-sky-500">{{ __('Schedule') }}</x-primary-button>
             </a>
 
             @if(auth()->user()->is_admin)

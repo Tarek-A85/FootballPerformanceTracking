@@ -33,7 +33,7 @@
         </x-primary-button>
         </div>
         <div>
-            <a href="{{ route('team.match_stats', $team) }}" class="bg-gray-400 p-2 rounded-md">
+            <a href="{{ route('team.training_stats', $team) }}" class="bg-gray-400 p-2 rounded-md">
               {{ __('Reset') }}
            </a>
            </div>
@@ -44,20 +44,26 @@
         </form>
 
         @if(count($data['numbers']))
-        <h1 class="font-bold text-xl mt-8">{{ __('Trainings') }}</h1>
+        <h1 class="font-bold text-2xl mt-12">{{ __('Trainings') }}</h1>
     <div class="rounded border-2 p-5">
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-       <p class="font-semibold">{{ __('Number Of Trainings') }}:  {{ $data['numbers']['trainings'] }}</p>
-       <p class="font-semibold">{{ __('Number Of Minutes') }}:  {{ __(':minutes minutes', ['minutes' => round($data['numbers']['minutes'],2) ]) }}
-         
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-xl">
+       <p class="font-semibold">{{ __('Number Of Trainings') }}:  <span class="bg-blue-500 p-0.5">{{ $data['numbers']['trainings'] }}</span></p>
+       <p class="font-semibold">{{ __('Total Time') }}:  <span class="bg-blue-500 p-0.5">{{ __(':hours hours and :minutes minutes', ['hours' => floor($data['numbers']['minutes'] / 60),'minutes' => round($data['numbers']['minutes'] % 60) ]) }} </span>
        </p>
        </div>
     </div>
-
+    <h1 class="font-bold text-2xl mt-12">{{ __('Training Types') }}</h1>
+    <div class="rounded border-2 p-5 text-xl">
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 font-semibold">
+        @foreach($data['numbers']['types'] as $key => $value)
+        <div>
+         {{'App\Models\TrainingType'::find($key)['name_' . app()->getLocale()]}} : <span class="bg-blue-500 p-0.5">{{$value}} </span>
+         </div>
+        @endforeach
+        </div>
+    </div>
         @else
-
        <h1 class="text-2xl font-bold">{{ __('You Don\'t Have Any Statistics') }}</h1>
-
     @endif
     </div>
 </x-team-layout>

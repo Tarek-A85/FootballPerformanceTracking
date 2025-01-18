@@ -30,7 +30,10 @@ class Team extends Model
         return $this->hasMany(OfficialMatch::class, 'home_team_id');
     }
 
-    
+    public function finished_matches()
+    {
+        return $this->hasMany(OfficialMatch::class, 'home_team_id')->where('status_id', ActivityStatus::where('name_en', 'finished')->first()->id);
+    }
 
     public function getSuitableBackgroundAttribute()
     {

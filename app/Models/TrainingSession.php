@@ -21,6 +21,13 @@ class TrainingSession extends Model
         );
     }
 
+    public function time(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => Carbon::parse($value)->format('H:i'),
+        );
+    }
+
 
     public function trainable()
     {

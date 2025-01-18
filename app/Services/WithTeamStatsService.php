@@ -43,7 +43,7 @@ class WithTeamStatsService extends BaseService{
 
     $numbers['matches']++;
 
-    foreach(['shots', 'goals', 'passes', 'assists', 'yellows', 'reds', 'rating'] as $key){
+    foreach(['shots', 'goals', 'passes', 'assists', 'yellows', 'reds', 'headers', 'rating'] as $key){
         if(isset($numbers[$key])){
             $numbers[$key] += $match->stats[$key];
         }
@@ -73,6 +73,8 @@ class WithTeamStatsService extends BaseService{
     $numbers['passing_avg'] = $numbers['passes'] / $numbers['matches'];
 
     $numbers['successfull_scoring_attempts'] = $numbers['goals'] / $numbers['shots'];
+
+    $numbers['headers_avg'] = $numbers['headers'] / $numbers['matches'];
 
 }
 
@@ -105,16 +107,19 @@ class WithTeamStatsService extends BaseService{
 
     foreach($trainings as $training){
         $numbers['trainings']++;
-
-        $numbers['minutes'] += $training->minutes;
-
-       if(isset($numbers[$training->training_type->name_en]) ){
-        $numbers[$training->training_type->name_en]++;
-        $numbers[$training->training_type->name_ar]++;
+        if(!isset($numbers['minutes'])){
+            $numbers['minutes'] = $training->minutes;
+        }
+        else{
+            $numbers['minutes'] += $training->minutes;
+        }
+       if(isset($numbers['types'][$training->training_type->id]) ){
+        $numbers['types'][$training->training_type->id]++;
+      
        }
        else{
-        $numbers[$training->training_type->name_en] = 1;
-        $numbers[$training->training_type->name_ar] = 1;
+        $numbers['types'][$training->training_type->id] = 1;
+
        }
        
     }

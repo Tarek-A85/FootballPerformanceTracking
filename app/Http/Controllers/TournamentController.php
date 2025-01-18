@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Tournament\ShowTournamentRequest;
 use App\Http\Requests\Tournament\StoreTournamentRequest;
+use App\Http\Requests\Tournament\UpdateTournamentRequest;
+use App\Models\Team;
 use App\Models\Tournament;
 use App\Services\TournamentService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class TournamentController extends Controller
 {
@@ -22,15 +26,17 @@ class TournamentController extends Controller
      */
     public function index()
     {
-        //
+        $tournaments = $this->tournament_service->index();
+
+        return view('tournament.index', compact('tournaments'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Team $team = null): View
     {
-        return view('tournament.create');
+        return view('tournament.create', compact('team'));
     }
 
     /**
@@ -42,15 +48,22 @@ class TournamentController extends Controller
 
         $this->tournament_service->store($request->validated());
 
-        return redirect()->route('tournaments.index')->with('success', __('The tournament is created successfully'));
+        return redirect()->route('tournaments.index')->with('success', __('The :attribute is created successfully', ['attribute' => __('tournament')]));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Tournament $tournament)
+    public function show(Tournament $tournament, ShowTournamentRequest $request)
     {
-        //
+        if(!Gate::allows('manage-tournament', $tournament)){
+            abort(404);
+        }
+
+        $schedule = $this->tournament_service->show($tournament, $request->validated());
+
+        return view('tournament.show', compact('schedule', 'tournament'));
+        
     }
 
     /**
@@ -58,15 +71,27 @@ class TournamentController extends Controller
      */
     public function edit(Tournament $tournament)
     {
-        //
+        if(!Gate::allows('manage-tournament', $tournament)){
+            abort(404);
+        }
+
+        return view('tournament.edit', compact('tournament'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tournament $tournament)
+    public function update(UpdateTournamentRequest $request, Tournament $tournament)
     {
-        //
+        if(!Gate::allows('manage-tournament', $tournament)){
+            abort(404);
+        }
+
+        $request->ensure_uniqueness();
+
+        $this->tournament_service->update($request->validated(), $tournament);
+
+        return redirect()->back()->with('success', __('The :attribute is updated successfully', ['attribute' => __('tournament')]));
     }
 
     /**
@@ -74,6 +99,26 @@ class TournamentController extends Controller
      */
     public function destroy(Tournament $tournament)
     {
-        //
+        if(!Gate::allows('manage-tournament', $tournament)){
+            abort(404);
+        }
+
+        $this->tournament_service->destroy($tournament);
+
+        return redirect()->route('tournaments.index')->with('success', __('The :attribute is deleted successfully', ['attribute' => __('tournament')]));
+    }
+
+    /**
+     * Create a new match in this tournament
+     */
+    public function create_match(Tournament $tournament)
+    {
+        if(!Gate::allows('manage-tournament', $tournament)){
+            abort(404);
+        }
+        
+       $data = $this->tournament_service->create_match();
+
+        return view('tournament.create-match', compact('tournament', 'data'));
     }
 }

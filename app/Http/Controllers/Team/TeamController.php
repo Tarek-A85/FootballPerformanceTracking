@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Team;
 
 use App\Events\CreationEvent;
 use App\Http\Requests\team\ShowTeamRequest;
 use App\Http\Requests\Team\StoreTeamRequest;
 use App\Http\Requests\Team\UpdateTeamRequest;
 use App\Models\Team;
-use App\Services\TeamService;
+use App\Services\Team\TeamService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 
 class TeamController extends Controller
 {
@@ -25,7 +27,8 @@ class TeamController extends Controller
      */
     public function index()//: View
     {
-        $teams = auth()->user()->teams->append('suitable-background');
+        
+        $teams = auth()->user()->teams->append('suitable-background')->loadCount('finished_matches');
 
         return view('team.index', compact('teams'));
     }
@@ -47,7 +50,7 @@ class TeamController extends Controller
 
         $this->team_service->store($request->validated());
        
-        return redirect()->route('teams.index')->with('success', __('The team is created successfully'));
+        return redirect()->route('teams.index')->with('success', __('The :attribute is created successfully', ['attribute' => __('team')]));
     }
 
     /**
@@ -55,6 +58,9 @@ class TeamController extends Controller
      */
     public function show(Team $team, ShowTeamRequest $request)
     {
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
         
        $schedule = $this->team_service->show($request->validated(), $team);
 
@@ -66,6 +72,10 @@ class TeamController extends Controller
      */
     public function edit(Team $team)
     {
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
+
         return view('team.edit', compact('team'));
     }
 
@@ -74,11 +84,15 @@ class TeamController extends Controller
      */
     public function update(UpdateTeamRequest $request, Team $team)
     {
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
+
         $request->ensure_uniqueness();
 
         $this->team_service->update($request->validated(), $team);
 
-        return redirect()->route('teams.edit', $team)->with('success', __('The team is updated successfully'));
+        return redirect()->route('teams.edit', $team)->with('success', __('The :attribute is updated successfully', ['attribute' => __('team')]));
     }
 
     /**
@@ -86,8 +100,12 @@ class TeamController extends Controller
      */
     public function destroy(Team $team)
     {
+        if(!Gate::allows('manage-team', $team)){
+            abort(404);
+        }
+        
         $this->team_service->destroy($team);
 
-        return redirect()->route('teams.index')->with('success', __('The team is deleted successfully'));
+        return redirect()->route('teams.index')->with('success', __('The :attribute is deleted successfully', ['attribute' => __('team')]));
     }
 }
