@@ -38,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Model::preventLazyLoading();
 
+       
+
         Relation::enforceMorphMap([
             'team' => 'App\Models\Team',
             'user' => 'App\Models\User',
