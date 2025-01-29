@@ -2,7 +2,11 @@
     "routes": [
       { 
         "src": "/(.*)", 
+<<<<<<< HEAD
         "dest": "/folder/index.php" 
+=======
+        "dest": "/public/index.php" 
+>>>>>>> f7bbaf55252dbc3500a5124eb41e25554dcac79f
     }
     ]
 }
